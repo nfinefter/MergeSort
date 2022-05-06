@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MergeSort
 {
-
-    class Program<T>
+    class Program
     {
-        public T[] MergeSort(T[] items)
+        static T[] MergeSort<T>(T[] items) where T : IComparable<T>
         {
             if (items.Length < 2)
             {
@@ -18,30 +18,66 @@ namespace MergeSort
             T[] left = new T[items.Length - middle];
             T[] right = new T[middle];
 
-            for (int i = 0; i < items.Length; i++)
+            for (int i = 0; i < left.Length; i++)
             {
-                if (i < left.Length)
+                left[i] = items[i];
+            }
+            for (int i = 0; i < right.Length; i++)
+            {
+                right[i] = items[i + left.Length];
+            }
+
+            return Merge(MergeSort(left), MergeSort(right));
+        }
+
+        private static T[] Merge<T>(T[] left, T[] right) where T : IComparable<T>
+        {
+            T[] merged = new T[left.Length + right.Length];
+
+            int rightCount = 0;
+            int leftCount = 0;
+            int mergeCount = 0;
+
+            //while does not account for leftovers
+            while (rightCount < right.Length && leftCount < right.Length)
+            {
+                if (left[leftCount].CompareTo(right[rightCount]) <= 0)
                 {
-                    left[i] = items[i];
+                    merged[mergeCount] = left[leftCount];
+                    leftCount++;
                 }
                 else
                 {
-                    right[i] = items[i];
+                    merged[mergeCount] = right[rightCount];
+                    rightCount++;
                 }
+                mergeCount++;
             }
-            return Merge(MergeSort(left), MergeSort(right));
-        }
-        private T[] Merge(T[] left, T[] right)
-        {
-            T[] merged = new T[left.Length + right.Length];
-            //idk how to merge and sort
+            while (rightCount < right.Length)
+            {
+                merged[mergeCount] = right[rightCount];
+                mergeCount++;
+                rightCount++;
+            }
+            while (leftCount < left.Length)
+            {
+                merged[mergeCount] = left[leftCount];
+                mergeCount++;
+                leftCount++;
+            }
 
             return merged;
         }
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-           
+            int[] items = new int[4];
+
+            items[0] = 1;
+            items[1] = 1;
+            items[2] = 1;
+
+            MergeSort(items);
         }
     }
 }
