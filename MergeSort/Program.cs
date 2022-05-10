@@ -39,7 +39,7 @@ namespace MergeSort
             int mergeCount = 0;
 
             //while does not account for leftovers
-            while (rightCount < right.Length && leftCount < right.Length)
+            while (rightCount < right.Length && leftCount < left.Length)
             {
                 if (left[leftCount].CompareTo(right[rightCount]) <= 0)
                 {
@@ -65,19 +65,63 @@ namespace MergeSort
                 mergeCount++;
                 leftCount++;
             }
+           
+           
 
             return merged;
         }
 
+        static void MergeSortInPlace<T>(T[] items, int start, int end) where T : IComparable<T>
+        {
+            if (start >= end)
+            {
+                return;
+            }
+
+            int middle = (start+end) / 2; //find the mid point based on start and end
+
+
+            MergeSortInPlace(items, start, middle);
+            MergeSortInPlace(items, middle + 1, end);
+
+            MergeInPlace(items, start, middle);
+        }
+        
+        static void MergeInPlace<T>(T[] items, int start, int middle) where T : IComparable<T> //TODO: come back and fix me at some point
+        {
+            while (start < items.Length)
+            {
+                if (start <= middle)
+                {
+                    if (items[start].CompareTo(items[middle]) >= 0)
+                    {
+                        items[start] = items[middle];
+
+                    }
+                }
+                else
+                {
+                    if (items[start].CompareTo(items[items.Length]) >= 0)
+                    {
+                        items[start] = items[items.Length];
+
+                    }
+                }
+                start++;
+            }
+        }
+
+
         public static void Main(string[] args)
         {
-            int[] items = new int[4];
+            int[] items = new int[] { 1, 3, 2, 4, 18, 12, 213,5 , 4536,4, 23,4, 1,2 ,312, 3,12, 3 };
 
-            items[0] = 1;
-            items[1] = 1;
-            items[2] = 1;
-
-            MergeSort(items);
+            items = MergeSort(items);
+            MergeSortInPlace(items, 0, items.Length);
+            for (int i = 0; i < items.Length; i++)
+            {
+                Console.WriteLine(items[i]);
+            }
         }
     }
 }
